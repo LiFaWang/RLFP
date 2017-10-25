@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">人力分配</string>
+    <string name="net_no_active">请在网络通畅的情况下使用！！！</string>
+    <string name="connect_server_error">服务器连接失败，请检查！！！</string>
+    <string name="webservice_no_query">查询的结果不存在，请检查！！！</string>
+
+
+    <!--android6.0权限-->
+    <string name="permission_settings">设置</string>
+    <string name="permission_help">帮助</string>
+    <string name="permission_string_help_text">当前应用缺少必要权限。\n\n请点击\"设置\"-\"权限\"-打开所需权限。\n\n最后点击两次后退按钮，即可返回。</string>
+    <string name="permission_quit">退出</string>
+</resources>
