@@ -5,7 +5,9 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -107,8 +109,8 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
     private List<WsEntity> mClassGroupBeanEntityList;//班组的源数据
 
     private String xData[];//X轴描述的数组
-    private long mFirstClickgv;//工作组第一次点击计时
-    private long mFirstClicklv;//工序组第一次点击计时
+    private long mFirstClickGv;//工作组第一次点击计时
+    private long mFirstClickLv;//工序组第一次点击计时
     private List<ProcessWorkerBean> mProcessWorkerBeanList;//当前工序组的员工集合
 
 
@@ -155,8 +157,8 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         assignMainActivityBinding.gvGroup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (System.currentTimeMillis() - mFirstClickgv > 500) {
-                    mFirstClickgv = System.currentTimeMillis();
+                if (System.currentTimeMillis() - mFirstClickGv > 500) {
+                    mFirstClickGv = System.currentTimeMillis();
                     currentPosition = position;
                     return;
                 }
@@ -165,13 +167,14 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
             }
         });
         assignMainActivityBinding.lvWork.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-                if (System.currentTimeMillis() - mFirstClicklv > 500) {
+                if (System.currentTimeMillis() - mFirstClickLv > 500) {
                     currentPosition = position;
-                    mFirstClicklv = System.currentTimeMillis();
+                    mFirstClickLv = System.currentTimeMillis();
                     selectedProgressItem(position);//单击选中条目
                 } else {
                     if (currentPosition != position) return;
@@ -197,7 +200,6 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                 for (int i = 0; i < mClassGroupBeanEntityList.size(); i++) {
                     ClassGroupBean bean = (ClassGroupBean) mClassGroupBeanEntityList.get(i);
                     if (bean.SEMPLOYEENAMECN.contains(name)) {
-                        OthersUtil.ToastMsg(AssignMainActivity.this, bean.SEMPLOYEENAMECN);
                         searchGroupBeen.add(bean);
                     } else {
                         OthersUtil.ToastMsg(AssignMainActivity.this, "没有找到" + bean.SEMPLOYEENAMECN);
@@ -292,6 +294,7 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
      *
      * @param position
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void doubleClickProgressItem(final int position) {
         for (int i = 0; i < workerBeanList.size(); i++) {
             if (position == i) {
@@ -315,7 +318,7 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         final LinearLayout llWorkerPic = (LinearLayout) view.findViewById(R.id.ll_workerPic);
         for (int i = 0; i < subProcessWorkerBeanList.size(); i++) {
             final ImageView imageView = new ImageView(getApplicationContext());
-            imageView.setPadding(5, 5, 5, 5);
+            imageView.setPadding(10, 5, 10, 5);
             ProcessWorkerBean processWorkerBean = subProcessWorkerBeanList.get(i);
             String path = "http://" + SPHelper.getLocalData(AssignMainActivity.this, RLFP_IP, String.class.getName(), "").toString()
                     + RLFP_PICTURE_FOLDER +
@@ -334,7 +337,6 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                     delProcessWorkerBean[0] = bean;
                     ProcessWorkerBeanGroup.add(delProcessWorkerBean[0]);
                     llWorkerPic.getChildAt(p).setBackgroundColor(Color.YELLOW);
-//                    llWorkerPic.setBackgroundColor(Color.YELLOW);
 //                    llWorkerPic.removeViewAt(p);
                 }
             });
@@ -346,7 +348,6 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         final AlertDialog.Builder builder = new AlertDialog.Builder(AssignMainActivity.this);
         builder.setMessage("请选择要删除的员工");
         builder.setTitle("提示");
-
         builder.setView(view);
         builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
             @Override
@@ -413,7 +414,13 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //增加工作人员
-                            upDateWorkers(processWorkerBean.SPARTNAME, processWorkerBean.IHDRID, processWorkerBean.ICUPROCEDUREID, mSemployeeno);
+                            if (workerBeanList.get(processWorkerPosition).size()<4){
+
+                                upDateWorkers(processWorkerBean.SPARTNAME, processWorkerBean.IHDRID, processWorkerBean.ICUPROCEDUREID, mSemployeeno);
+
+                            }else {
+                                OthersUtil.ToastMsg(AssignMainActivity.this,"工序组最多添加四名成员");
+                            }
                             for (int i = 0; i < classGroupBeanShowList.size(); i++) {
                                 ClassGroupBean s = classGroupBeanShowList.get(i);
                                 s.isSelected = false;
@@ -874,7 +881,9 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         while (it.hasNext()) {
             Map.Entry<String, List<ProcessWorkerBean>> entry = it.next();
             List<ProcessWorkerBean> subList = entry.getValue();
-            workerBeanList.add(subList);
+
+
+                workerBeanList.add(subList);
         }
         try{
             workerBeanList.get(processWorkerPosition).get(0).isSelected=true;
