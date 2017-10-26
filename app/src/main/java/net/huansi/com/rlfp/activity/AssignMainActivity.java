@@ -333,7 +333,9 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                     ProcessWorkerBean bean = subProcessWorkerBeanList.get(p);
                     delProcessWorkerBean[0] = bean;
                     ProcessWorkerBeanGroup.add(delProcessWorkerBean[0]);
-                    llWorkerPic.removeViewAt(p);
+                    llWorkerPic.getChildAt(p).setBackgroundColor(Color.YELLOW);
+//                    llWorkerPic.setBackgroundColor(Color.YELLOW);
+//                    llWorkerPic.removeViewAt(p);
                 }
             });
             imageView.setTag(i);
@@ -360,6 +362,9 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                workerBeanList.get(processWorkerPosition).get(0).isSelected=true;
+                mProcessWorkerAdapter.notifyDataSetChanged();
+
                 dialog.dismiss();
             }
         });
@@ -376,12 +381,9 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                 workerBeanList.get(i).get(0).isSelected = !workerBeanList.get(i).get(0).isSelected;
                 if ( workerBeanList.get(i).get(0).isSelected){
                     processWorkerPosition=position;
+                    mProcessWorkerBeanList = workerBeanList.get(i);
                 }else {
                     processWorkerPosition=-1;
-                }
-                if (workerBeanList.get(i).get(0).isSelected) {
-                    mProcessWorkerBeanList = workerBeanList.get(i);
-
                 }
                 continue;
             }
@@ -417,9 +419,8 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                                 s.isSelected = false;
                             }
 
-                            processWorkerPosition=position;
+//                            processWorkerPosition=position;
                             mGroupAdapter.notifyDataSetChanged();
-                            mProcessWorkerAdapter.notifyDataSetChanged();
                             dialog.dismiss();
                         }
                     });
@@ -874,6 +875,11 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
             Map.Entry<String, List<ProcessWorkerBean>> entry = it.next();
             List<ProcessWorkerBean> subList = entry.getValue();
             workerBeanList.add(subList);
+        }
+        try{
+            workerBeanList.get(processWorkerPosition).get(0).isSelected=true;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         mProcessWorkerAdapter.notifyDataSetChanged();
     }
