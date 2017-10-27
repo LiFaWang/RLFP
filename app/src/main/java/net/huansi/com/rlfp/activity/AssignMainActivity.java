@@ -29,6 +29,9 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import net.huansi.com.rlfp.R;
 import net.huansi.com.rlfp.adapter.BatchNumAdapter;
@@ -104,7 +107,7 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
     private ArrayAdapter<String> classGroupNameAdapter;//班组名称的adapter
 
     private boolean isShrink = false;//false=>释放 true=>收缩
-    private int processWorkerPosition=-1;
+    private int processWorkerPosition = -1;
     private String mSemployeeno;//员工编码
     private List<WsEntity> mClassGroupBeanEntityList;//班组的源数据
 
@@ -202,7 +205,7 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                     if (bean.SEMPLOYEENAMECN.contains(name)) {
                         searchGroupBeen.add(bean);
                     } else {
-                        OthersUtil.ToastMsg(AssignMainActivity.this, "没有找到" + bean.SEMPLOYEENAMECN);
+//                        OthersUtil.ToastMsg(AssignMainActivity.this, "没有找到" + bean.SEMPLOYEENAMECN);
                     }
                 }
                 classGroupBeanShowList.clear();
@@ -302,7 +305,7 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                 if (workerBeanList.get(i).get(0).isSelected) {
                     mProcessWorkerBeanList = workerBeanList.get(i);
 //                  isProcessWorkerChecked = true;
-                    processWorkerPosition=position;
+                    processWorkerPosition = position;
                 }
                 continue;
             }
@@ -313,21 +316,24 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
 
         final List<ProcessWorkerBean> subProcessWorkerBeanList = workerBeanList.get(position);
         View view = View.inflate(this, R.layout.worker_pic, null);
-        final List<ProcessWorkerBean> ProcessWorkerBeanGroup=new ArrayList<>();
+        final List<ProcessWorkerBean> ProcessWorkerBeanGroup = new ArrayList<>();
         final ProcessWorkerBean[] delProcessWorkerBean = {null};
         final LinearLayout llWorkerPic = (LinearLayout) view.findViewById(R.id.ll_workerPic);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(5, 20, 5, 20);
         for (int i = 0; i < subProcessWorkerBeanList.size(); i++) {
             final ImageView imageView = new ImageView(getApplicationContext());
-            imageView.setPadding(10, 5, 10, 5);
+            imageView.setBackgroundResource(R.drawable.deleteimagelayoutbackground);
+            imageView.setPadding(20, 20, 20, 20);
             ProcessWorkerBean processWorkerBean = subProcessWorkerBeanList.get(i);
             String path = "http://" + SPHelper.getLocalData(AssignMainActivity.this, RLFP_IP, String.class.getName(), "").toString()
                     + RLFP_PICTURE_FOLDER +
                     processWorkerBean.SPICTUREPATH;
             Glide.with(AssignMainActivity.this)
-                 .load(path)
-                 .placeholder(R.drawable.icon_default) //设置占位图
-                 .error(R.drawable.icon_default)//设置错误图片
-                 .into(imageView);
+                    .load(path)
+                    .placeholder(R.drawable.icon_default) //设置占位图
+                    .error(R.drawable.icon_default)//设置错误图片
+                    .into(imageView);
 
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -337,17 +343,17 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                     delProcessWorkerBean[0] = bean;
                     ProcessWorkerBeanGroup.add(delProcessWorkerBean[0]);
                     llWorkerPic.getChildAt(p).setBackgroundColor(Color.YELLOW);
+                    imageView.setEnabled(false);
 //                    llWorkerPic.removeViewAt(p);
                 }
             });
             imageView.setTag(i);
 
-            llWorkerPic.addView(imageView);
+            llWorkerPic.addView(imageView, layoutParams);
         }
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(AssignMainActivity.this);
         builder.setMessage("请选择要删除的员工");
-        builder.setTitle("提示");
         builder.setView(view);
         builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
             @Override
@@ -363,7 +369,7 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                workerBeanList.get(processWorkerPosition).get(0).isSelected=true;
+                workerBeanList.get(processWorkerPosition).get(0).isSelected = true;
                 mProcessWorkerAdapter.notifyDataSetChanged();
 
                 dialog.dismiss();
@@ -380,11 +386,11 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         for (int i = 0; i < workerBeanList.size(); i++) {
             if (position == i) {
                 workerBeanList.get(i).get(0).isSelected = !workerBeanList.get(i).get(0).isSelected;
-                if ( workerBeanList.get(i).get(0).isSelected){
-                    processWorkerPosition=position;
+                if (workerBeanList.get(i).get(0).isSelected) {
+                    processWorkerPosition = position;
                     mProcessWorkerBeanList = workerBeanList.get(i);
-                }else {
-                    processWorkerPosition=-1;
+                } else {
+                    processWorkerPosition = -1;
                 }
                 continue;
             }
@@ -402,7 +408,7 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         for (int i = 0; i < classGroupBeanShowList.size(); i++) {
             if (position == i) {
                 mSemployeeno = classGroupBeanShowList.get(i).SEMPLOYEENO;
-                if (processWorkerPosition!=-1) {
+                if (processWorkerPosition != -1) {
                     classGroupBeanShowList.get(i).isSelected = !classGroupBeanShowList.get(i).isSelected;
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(AssignMainActivity.this);
@@ -414,19 +420,18 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //增加工作人员
-                            if (workerBeanList.get(processWorkerPosition).size()<4){
+                            if (workerBeanList.get(processWorkerPosition).size() < 4) {
 
                                 upDateWorkers(processWorkerBean.SPARTNAME, processWorkerBean.IHDRID, processWorkerBean.ICUPROCEDUREID, mSemployeeno);
 
-                            }else {
-                                OthersUtil.ToastMsg(AssignMainActivity.this,"工序组最多添加四名成员");
+                            } else {
+                                OthersUtil.ToastMsg(AssignMainActivity.this, "工序组最多添加四名成员");
                             }
                             for (int i = 0; i < classGroupBeanShowList.size(); i++) {
                                 ClassGroupBean s = classGroupBeanShowList.get(i);
                                 s.isSelected = false;
                             }
 
-//                            processWorkerPosition=position;
                             mGroupAdapter.notifyDataSetChanged();
                             dialog.dismiss();
                         }
@@ -467,26 +472,27 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         assignMainActivityBinding.barChart.getLegend().setEnabled(false);//设置解释
         assignMainActivityBinding.barChart.setDescription("");//设置描述
         assignMainActivityBinding.barChart.setBackgroundColor(getResources().getColor(R.color.colorBackground));
-//        assignMainActivityBinding.barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-//            @Override
-//            public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-//                if (xData == null || e.getXIndex() >= xData.length) return;
-//                for (int i = 0; i < xData.length; i++) {
-//                    xData[i] = "";
-//                }
-//                xData[e.getXIndex()] = mRealTimeProcessBarBeanList.get(e.getXIndex()).IPROCEDURESEQ;
-//                assignMainActivityBinding.barChart.invalidate();
-//            }
-//
-//            @Override
-//            public void onNothingSelected() {
-//                if (xData == null) return;
-//                for (int i = 0; i < xData.length; i++) {
-//                    xData[i] = "";
-//                }
-//                assignMainActivityBinding.barChart.invalidate();
-//            }
-//        });
+        assignMainActivityBinding.barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+                if (xData == null || e.getXIndex() >= xData.length) return;
+                for (int i = 0; i < xData.length; i++) {
+                    xData[i] = "";
+                }
+                xData[e.getXIndex()] = mRealTimeProcessBarBeanList.get(e.getXIndex()).SPROCEDURENAME;
+                assignMainActivityBinding.barChart.invalidate();
+            }
+
+            @Override
+            public void onNothingSelected() {
+                if (xData == null) return;
+                for (int i = 0; i < xData.length; i++) {
+                    xData[i] = mRealTimeProcessBarBeanList.get(i).IPROCEDURESEQ;
+                }
+
+                assignMainActivityBinding.barChart.invalidate();
+            }
+        });
 
     }
 
@@ -883,10 +889,10 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
             List<ProcessWorkerBean> subList = entry.getValue();
 
 
-                workerBeanList.add(subList);
+            workerBeanList.add(subList);
         }
-        try{
-            workerBeanList.get(processWorkerPosition).get(0).isSelected=true;
+        try {
+            workerBeanList.get(processWorkerPosition).get(0).isSelected = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -950,7 +956,7 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         for (int i = 0; i < mRealTimeProcessBarBeanList.size(); i++) {
             RealTimeProcessBarBean bean = mRealTimeProcessBarBeanList.get(i);
             barList.add(new BarEntry(Integer.valueOf(bean.IQTY), i));
-            xData[i] = bean.IPROCEDURESEQ;
+            xData[i] = bean.IPROCEDURESEQ;//
         }
         List<Integer> colorList = new ArrayList<>();
         for (int i = 0; i < barList.size(); i++) {
@@ -999,7 +1005,6 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         Matrix m = new Matrix();
         m.postScale(xData.length / 10.0f, 1f);//两个参数分别是x,y轴的缩放比例。例如：将x轴的数据放大为之前的1.5倍
         assignMainActivityBinding.barChart.getViewPortHandler().refresh(m, assignMainActivityBinding.barChart, false);//将图表动画显示之前进行缩放
-
         assignMainActivityBinding.barChart.setData(barData);
         assignMainActivityBinding.barChart.animateXY(0, 2000);
         assignMainActivityBinding.barChart.invalidate();

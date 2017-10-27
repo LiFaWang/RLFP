@@ -9,7 +9,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/myicon_qc"
+        android:icon="@drawable/renli"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
