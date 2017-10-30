@@ -344,7 +344,7 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                     ProcessWorkerBeanGroup.add(delProcessWorkerBean[0]);
                     llWorkerPic.getChildAt(p).setBackgroundColor(Color.YELLOW);
                     imageView.setEnabled(false);
-//                    llWorkerPic.removeViewAt(p);
+//                  llWorkerPic.removeViewAt(p);
                 }
             });
             imageView.setTag(i);

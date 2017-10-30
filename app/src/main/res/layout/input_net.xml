@@ -1,0 +1,21 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <EditText android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:inputType="textMultiLine"
+        android:gravity="left|top"
+        android:textColorHint="@color/gray"
+        android:background="@null"
+        android:textCursorDrawable="@null"
+        android:id="@+id/etIp"
+        android:textColor="@color/black"
+        android:paddingLeft="10dp"
+        android:paddingTop="5dp"
+        android:layout_alignParentTop="true"
+        android:hint="请输入IP地址"/>
+    <requestFocus />
+
+</RelativeLayout>
