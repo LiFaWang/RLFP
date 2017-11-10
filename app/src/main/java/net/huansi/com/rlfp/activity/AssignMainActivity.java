@@ -2,6 +2,7 @@ package net.huansi.com.rlfp.activity;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.ColorDrawable;
@@ -125,6 +126,9 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
     @Override
     public void init() {
         assignMainActivityBinding = (ActivityAssignMainBinding) viewDataBinding;
+        Intent intent = getIntent();
+        String cardNo = intent.getStringExtra("cardNo");
+
         setToolBarTitle("人力分派");
         TextView tvIP = getSubTitle();
         tvIP.setText("IP设置");
@@ -479,8 +483,16 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
                 for (int i = 0; i < xData.length; i++) {
                     xData[i] = "";
                 }
-                xData[e.getXIndex()] = mRealTimeProcessBarBeanList.get(e.getXIndex()).SPROCEDURENAME;
+                String sprocedurename = mRealTimeProcessBarBeanList.get(e.getXIndex()).SPROCEDURENAME;
+                xData[e.getXIndex()] = sprocedurename;
                 assignMainActivityBinding.barChart.invalidate();
+                for (int i = 0; i < workerBeanList.size(); i++) {
+                    if (sprocedurename.equals(workerBeanList.get(i).get(0).SPARTNAME)){
+                        //根据点击的柱子工序名称，快速滚动到工序列表的相应的位置
+                        assignMainActivityBinding.lvWork.smoothScrollToPosition(i);
+                        mProcessWorkerAdapter.notifyDataSetChanged();
+                    }
+                }
             }
 
             @Override
@@ -504,6 +516,7 @@ public class AssignMainActivity extends NotWebBaseActivity implements View.OnCli
         switch (event.index) {
             case READ_CARD_NO:
                 String cardNo = event.str1;
+
                 if (cardNo == null) cardNo = "";
                 setCurrentDate(queryCondition(true, "", "", "", cardNo));
                 break;
